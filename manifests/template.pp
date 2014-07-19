@@ -93,7 +93,6 @@ define elasticsearch::template(
     onlyif      => "test $(curl -s '${es_url}?pretty=true' | wc -l) -gt 1",
     notify      => $insert_notify,
     refreshonly => true,
-    require     => Class['elasticsearch']
   }
 
   if ($ensure == 'present') {
@@ -103,7 +102,7 @@ define elasticsearch::template(
       ensure  => 'present',
       source  => $file,
       notify  => Exec[ "delete_template_${name}" ],
-      require => [ Exec[ 'mkdir_templates_elasticsearch' ], Class['elasticsearch'] ]
+      require => Exec[ 'mkdir_templates_elasticsearch'
     }
 
     exec { "insert_template_${name}":
@@ -111,11 +110,10 @@ define elasticsearch::template(
       unless      => "test $(curl -s '${es_url}?pretty=true' | wc -l) -gt 1",
       refreshonly => true,
       loglevel    => 'debug',
-      require     => Class['elasticsearch']
     }
 
   }
 
-  Class['elasticsearch'] -> Elasticsearch::Template[$name]
+  Anchor['elasticsearch::end'] -> Elasticsearch::Template[$name]
 
 }

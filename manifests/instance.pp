@@ -272,4 +272,6 @@ define elasticsearch::instance(
     before        => $before
   }
 
+  Elasticsearch::Instance[$name] -> Anchor['elasticsearch::end']
+
 }
