@@ -92,7 +92,8 @@ define elasticsearch::template(
     command     => "curl -s -XDELETE ${es_url}",
     onlyif      => "test $(curl -s '${es_url}?pretty=true' | wc -l) -gt 1",
     notify      => $insert_notify,
-    refreshonly => true
+    refreshonly => true,
+    require     => Class['elasticsearch']
   }
 
   if ($ensure == 'present') {
@@ -109,7 +110,8 @@ define elasticsearch::template(
       command     => "curl -sL -w \"%{http_code}\\n\" -XPUT ${es_url} -d @${elasticsearch::configdir}/templates_import/elasticsearch-template-${name}.json -o /dev/null | egrep \"(200|201)\" > /dev/null",
       unless      => "test $(curl -s '${es_url}?pretty=true' | wc -l) -gt 1",
       refreshonly => true,
-      loglevel    => 'debug'
+      loglevel    => 'debug',
+      require     => Class['elasticsearch']
     }
 
   }
